@@ -6,8 +6,6 @@ from django.contrib import messages
 import pandas as pd
 import json
 
-def home(request):
-    return render(request, 'app/index.html')
 
 class CategoryView(View):
     def get(self, request):
@@ -16,7 +14,6 @@ class CategoryView(View):
         return render(request, 'app/main-category.html', {'categories': categories, 'form': form})
 
     def post(self, request):
-        # category = request.POST.get('category', None)
         form = CategoryForm(request.POST)
         if form.is_valid():
             try:
@@ -80,12 +77,12 @@ class ProductUploadView(View):
                 else:
                     df = pd.read_csv(csv_file)
                 column_names = df.columns.tolist()
-                name_identifier = ['name', 'product_name', 'title']
-                size_identifier = ['size', 'size_name']
-                color_identifier = ['color', 'colour']
-                price_identifier = ['price', 'cost']
-                brand_identifier = ['brand', 'manufacturer']
-                quantity_identifier = ['quantity', 'stock', 'stock_quantity']
+                name_identifier = ['name', 'product_name', 'title', 'product_title','product keyword']
+                size_identifier = ['size', 'size_name', 'meter', 'percent', 'sizes']
+                color_identifier = ['color', 'colour', 'colors', 'colours', 'product_colors', 'product colors', 'product colours']
+                price_identifier = ['price', 'cost', 'bucks', 'dollar', 'riyal', 'pkr']
+                brand_identifier = ['brand', 'manufacturer', 'made in', 'made by', 'make by', 'brands']
+                quantity_identifier = ['quantity', 'stock', 'stock_quantity', 'items', 'items quantity', 'items stock']
                 for index, row in df.iterrows():
                     for col in column_names:
                         if col in name_identifier:
