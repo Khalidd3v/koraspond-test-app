@@ -36,7 +36,7 @@ class Product(TimestampModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     brand = models.CharField(max_length=32, blank=True, null=True)
     quantity = models.FloatField(blank=True, null=True, default=0.0)
-    extra_fiels = models.TextField(blank=True, null=True)
+    extra_fields = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"khalid"
+        return self.name

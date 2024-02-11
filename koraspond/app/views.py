@@ -54,8 +54,19 @@ class SubCategoryView(View):
 
 class ProductUploadView(View):
     def get(self, request):
+        products = Product.objects.all()
+        extra_fields_keys = []
+        if products:
+            first_product = products[0]
+            if first_product.extra_fields:
+                try:
+                    extra_fields = json.loads(first_product.extra_fields)
+                    extra_fields_keys = list(extra_fields.keys())
+                except Exception as e:
+                    print(e)
+
         form = ProductUploadForm()
-        return render(request, 'app/products.html', {'form': form})
+        return render(request, 'app/products.html', {'form': form, 'products': products, 'extra_fields': extra_fields_keys})
 
     def post(self, request):
         form = ProductUploadForm(request.POST, request.FILES)
@@ -63,32 +74,51 @@ class ProductUploadView(View):
             csv_file = request.FILES['csv_file']
             main_category = form.cleaned_data['main_category']
             sub_category = form.cleaned_data['sub_category']
-
             try:
-                # Read CSV file using pandas
-                df = pd.read_csv(csv_file)
-                print(df.columns.tolist())
-                # Assuming CSV format: name, size, color, price, brand, quantity, extra_field_key1, extra_field_value1, extra_field_key2, extra_field_value2, ...
+                if not csv_file.name.endswith('.csv'):
+                    df = pd.read_excel(csv_file)
+                else:
+                    df = pd.read_csv(csv_file)
+                column_names = df.columns.tolist()
+                name_identifier = ['name', 'product_name', 'title']
+                size_identifier = ['size', 'size_name']
+                color_identifier = ['color', 'colour']
+                price_identifier = ['price', 'cost']
+                brand_identifier = ['brand', 'manufacturer']
+                quantity_identifier = ['quantity', 'stock', 'stock_quantity']
                 for index, row in df.iterrows():
-                    pass
-                    # product_data = {
-                    #     'name': row['name'],
-                    #     'size': row['size'],
-                    #     'color': row['color'],
-                    #     'price': row['price'],
-                    #     'brand': row['brand'],
-                    #     'quantity': row['quantity'],
-                    #     'category': main_category,
-                    #     'sub_category': sub_category,
-                    # }
-                    # Extract extra fields if any
-                    # extra_fields = {}
-                    # for column in df.columns[6:]:
-                    #     extra_fields[column] = row[column]
-                    # if extra_fields:
-                    #     product_data['extra_fields'] = json.dumps(extra_fields)
-                    # Product.objects.create(**product_data)
-                
+                    for col in column_names:
+                        if col in name_identifier:
+                            name = row[col]
+                        elif col in size_identifier:
+                            size = row[col]
+                        elif col in color_identifier:
+                            color = row[col]
+                        elif col in price_identifier:
+                            price = row[col]
+                        elif col in brand_identifier:
+                            brand = row[col]
+                        elif col in quantity_identifier:
+                            quantity = row[col]
+
+                    product_data = {
+                        'name': name,
+                        'size': size,
+                        'color': color,
+                        'price': price,
+                        'brand': brand,
+                        'quantity': quantity,
+                        'category': main_category,
+                        'sub_category': sub_category,
+                    }
+
+                    extra_fields = {}
+                    for column in df.columns[6:]:
+                        extra_fields[column] = row[column]
+                    if extra_fields:
+                        product_data['extra_fields'] = json.dumps(extra_fields)
+                    Product.objects.create(**product_data)
+
                 messages.success(request, 'Products uploaded successfully!')
                 return redirect('add_product')
             except Exception as e:
@@ -97,4 +127,4 @@ class ProductUploadView(View):
         else:
             messages.error(request, form.errors)
         
-        return render(request, 'app/products.html', {'form': form})
+        return redirect('add_product')

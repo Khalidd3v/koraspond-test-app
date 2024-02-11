@@ -1,5 +1,6 @@
 {% extends "app/main.html" %}
 {% load static %}
+{% load json_filters %}
 
 
 {% block content %}
@@ -24,19 +25,35 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Brand</th>
+                <th>Category</th>
+                <th>Sub Category</th>
+                {% for field in extra_fields %}
+                <th>{{field}}</th>
+                {% endfor %}
                 <th>Date & Time</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Data 1</td>
-                <td>Data 2</td>
-                <td>Data 3</td>
-                <td>Data 4</td>
-                <td>Data 5</td>
-                <td>Data 6</td>
-                <td>Data 7</td>
-              </tr>
+              {% for product in products %}
+                  <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ product.name }}</td>
+                      <td>{{ product.size }}</td>
+                      <td>${{ product.price }}</td>
+                      <td>{{ product.quantity }}</td>
+                      <td>{{ product.brand }}</td>
+                      <td>{{ product.category }}</td>
+                      <td>{{ product.sub_category }}</td>
+                      {% if extra_fields %}
+                      {% with product.extra_fields|parse_json as extra_fields %}
+                          {% for key, value in extra_fields.items %}
+                              <td class="extra_fiel_value">{% if value %}{{ value }}{% else %}''{% endif %}</td>
+                          {% endfor %}
+                      {% endwith %}
+                      {% endif %}
+                      <td>{{ product.created_at }}</td>
+                  </tr>
+              {% endfor %}
               <!-- Add more rows as needed -->
             </tbody>
           </table>
@@ -75,5 +92,15 @@
       </div>
     </div>
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var extra_fiel_values = document.querySelectorAll('.extra_fiel_value');
+      extra_fiel_values.forEach(function(value, index){
+        if(value.textContent == 'nan'){
+          value.textContent = "N/A";
+        }
+      });
+    });
+  </script>
 {% endblock content %}
     
