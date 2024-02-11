@@ -1,0 +1,67 @@
+{% extends "app/main.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="container card-container mt-4">
+    <div class="row justify-content-center">
+      <div class="col">
+        <div class="card custom-card">
+          <div class="card-heading">Subcategories</div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Sr. No</th>
+                <th>Subcategory Title</th>
+                <th>Date & Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for subcategory in subcategories %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ subcategory.category }}</td>
+                <td>{{ subcategory.created_at }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="text-right">
+            <button class="btn btn-info" data-toggle="modal" data-target="#addSubcategoryModal">Add Subcategory</button>
+          </div>
+          <div>
+            {% if messages %}
+            {% for m in messages %}
+            <p><strong>Message Alert :</strong> {{ m }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal for Adding Subcategory -->
+<div class="modal fade" id="addSubcategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addSubcategoryModalLabel">Add Subcategory</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="subcategoryForm" method="post" action="{% url 'sub_category' %}">
+          <!-- Include CSRF token -->
+          {% csrf_token %}
+          <!-- Subcategory input -->
+          {{ form.as_p }}
+          <!-- Submit button -->
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

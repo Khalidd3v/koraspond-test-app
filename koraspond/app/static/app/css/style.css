@@ -1,0 +1,29 @@
+    /* Custom Styles */
+    body {
+        font-family: 'Roboto', sans-serif;
+        font-size: 16px;
+      }
+  
+      .card-container {
+        margin-top: 4rem; /* Adjust top margin as needed */
+      }
+  
+      .custom-card {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+  
+      .card-heading {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+  
+      .modal-body {
+        padding: 20px;
+      }
+      .table-responsive {
+          overflow-x: auto;
+        }
